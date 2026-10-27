@@ -1,4 +1,4 @@
-"""Maya 2024 main-thread adapter; standard library + Maya API only."""
+"""Maya 2022 / 2024 main-thread adapter; standard library + Maya API only."""
 import contextlib
 import hashlib
 import json

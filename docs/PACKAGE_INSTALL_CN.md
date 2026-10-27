@@ -1,6 +1,6 @@
-# FaceInverse 0.3 安装说明
+# FaceInverse 0.3.1 安装说明
 
-支持 Windows x64、Maya 2024。工具不分发 Maya、角色、DNA 或 Epic 插件；角色必须已能在目标电脑正常评价。
+支持 Windows x64、Maya 2022（Python 3 模式）和 Maya 2024；安装包默认目标由 release.json 指定。工具不分发 Maya、角色、DNA 或 Epic 插件；角色必须已能在目标电脑正常评价。
 
 ## 联网安装包
 
@@ -36,7 +36,7 @@ runpy.run_path(r'D:/Tools/FaceInverse/scripts/launch_ui.py')
 
 ## 目标电脑的设置
 
-第一次在“项目与视频”页选择：中性角色场景、Maya 2024 mayapy、已有 RigLogic 插件、Faceboard 根、输出脸部 Mesh、头部参考和只读诊断节点。标准命名通常为 gui / head_lod0_mesh / head_grp / CTRL_expressions，命名空间不同要相应调整。
+第一次在“项目与视频”页选择：中性角色场景、当前目标版本的 mayapy、已有 RigLogic 插件、Faceboard 根、输出脸部 Mesh、头部参考和只读诊断节点。标准命名通常为 gui / head_lod0_mesh / head_grp / CTRL_expressions，命名空间不同要相应调整。
 
 默认自动查找标准位置的 Maya 和 MetaHuman for Maya 插件。安装在其他位置时手动选择。运行时安装通过不代表未知角色绑定通过；必须在那台电脑先完成角色标定。
 
@@ -50,3 +50,8 @@ runpy.run_path(r'D:/Tools/FaceInverse/scripts/launch_ui.py')
 - 安装验证日志在 work/verify_install.json；项目步骤日志和 status.json 在各项目目录。
 
 本机验证使用同一台 Windows 电脑上的干净目录和独立运行时，不能声称已在所有其他电脑或显卡实机验证。
+
+
+## Maya 2022 版本
+
+2022 专项安装、Python 3 模式、插件版本和跨电脑迁移见 MAYA2022_INSTALL_CN.md。0.3.1 默认关闭未标定的幅度补偿；请用新建项目采用新默认。保存本机路径设置后，运行 VERIFY_MAYA.bat 验证实际角色；VERIFY.bat 仅验证依赖和数值算法。

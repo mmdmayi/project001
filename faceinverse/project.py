@@ -9,6 +9,7 @@ def invoke(executable,args,folder,label):
     env=dict(os.environ);env['PYTHONPATH']=str(ROOT);env['OPENBLAS_NUM_THREADS']='1';env['OMP_NUM_THREADS']='1';env['MPLCONFIGDIR']=str(folder/'cache'/'mpl')
     # mayapy's Windows launcher can mangle non-ASCII argv; transmit job location as ASCII base64.
     if len(args)>=3 and args[:2]==['-m','faceinverse.maya_worker']:
+        env.pop('PYTHONHOME',None);env['MAYA_PYTHON_VERSION']='3'
         env['FACEINVERSE_JOB_B64']=base64.b64encode(str(args[2]).encode('utf8')).decode('ascii')
         env['FACEINVERSE_ROOT_B64']=base64.b64encode(str(ROOT).encode('utf8')).decode('ascii')
         args=['-c',"import os,sys,base64,runpy;sys.path.insert(0,base64.b64decode(os.environ['FACEINVERSE_ROOT_B64']).decode('utf8'));runpy.run_module('faceinverse.maya_worker',run_name='__main__')"]

@@ -15,6 +15,14 @@ class RetargetTests(unittest.TestCase):
         for row,obs in zip(result['values'],result['predicted_observations']):
             self.assertLessEqual(abs(row[0]),1.)
             np.testing.assert_allclose(obs,[max(row[0],0),max(-row[0],0)],atol=1e-8)
+    def test_default_does_not_enable_amplitude_heuristics(self):
+        rows=[dict(time_seconds=i/24,detected=True,scores={'positive':.2,'negative':0}) for i in range(3)]
+        tracking=dict(fps=24,frames=rows)
+        default=retarget(self.calibration(),tracking)
+        explicit=retarget(self.calibration(),tracking,assist=False)
+        self.assertFalse(default['landmark_assistance']['applied'])
+        np.testing.assert_array_equal(default['values'],explicit['values'])
+
     def test_fractional_frame_timebase(self):
         fps=30000/1001
         rows=[dict(time_seconds=i/fps,detected=True,scores={'positive':0,'negative':0}) for i in range(3)]

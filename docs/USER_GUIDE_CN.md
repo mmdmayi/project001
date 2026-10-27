@@ -1,4 +1,4 @@
-# FaceInverse 0.3 操作说明
+# FaceInverse 0.3.1 操作说明
 
 ## 1. 建立项目
 
@@ -60,3 +60,8 @@ RUN_PROJECT.bat solve "D:\项目\session.json"
 目标 Maya 时间为 24 fps，按视频时间生成分数关键帧，可处理本轮验证的 29.97 fps 恒定帧率素材。VFR 请先转换成恒定帧率。
 
 本工具实现选帧、手调目标表情、记录标定样本、按表情重算的操作方式，不声称复制 Faceware / Facegood 专有算法或已达到相同产品精度。详见 RELEASE_TESTS.md。
+
+
+## Maya 2022 版本
+
+2022 专项安装、Python 3 模式、插件版本和跨电脑迁移见 MAYA2022_INSTALL_CN.md。0.3.1 默认关闭未标定的幅度补偿；请用新建项目采用新默认。保存本机路径设置后，运行 VERIFY_MAYA.bat 验证实际角色；VERIFY.bat 仅验证依赖和数值算法。

@@ -65,7 +65,7 @@ def create(path,calibration_path,tracking_path,baseline_path,config):
     if len(tracking['frames'])!=len(baseline['frames']):raise ValueError('追踪和基线动画帧数不同')
     names=sorted({n for f in tracking['frames'] if f.get('scores') for n in f['scores'] if not n.startswith('_')})
     if not names:raise ValueError('没有可用表情系数')
-    info=dict(schema=1,version='0.3.0',session_id=str(uuid.uuid4()),
+    info=dict(schema=1,version='0.3.1',session_id=str(uuid.uuid4()),
         rig_signature=rig_signature(cal),clip_id=fingerprint(dict(source=tracking.get('source'),start=tracking.get('source_start_seconds'),
              fps=tracking['fps'],frames=len(tracking['frames']),scores=[f.get('scores') for f in tracking['frames']])),
         paths=dict(calibration=relative(calibration_path,path.parent),tracking=relative(tracking_path,path.parent),

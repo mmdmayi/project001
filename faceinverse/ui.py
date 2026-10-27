@@ -1,4 +1,4 @@
-"""Maya 2024 Qt UI: offline project + animator-authored expression sample workflow."""
+"""Maya 2022 / 2024 Qt UI: offline project + animator-authored expression sample workflow."""
 import json,sys
 from pathlib import Path
 from PySide2 import QtCore,QtGui,QtWidgets
@@ -20,7 +20,7 @@ def maya_parent():
 class FaceInverseWindow(QtWidgets.QDialog):
     def __init__(self,parent=None):
         super(FaceInverseWindow,self).__init__(parent)
-        self.setObjectName('FaceInverse03');self.setWindowTitle('FaceInverse 0.3 · 关键表情标定')
+        self.setObjectName('FaceInverse03');self.setWindowTitle('FaceInverse 0.3.1 · 关键表情标定')
         self.setFont(QtGui.QFont('Microsoft YaHei',10))
         self.resize(860,900);self.setMinimumSize(720,650)
         self.path=None;self.data=None;self.base=None;self.tracking=None;self.job=None;self.loading=False
@@ -37,12 +37,13 @@ class FaceInverseWindow(QtWidgets.QDialog):
             self.status.setText(str(exc));self.log.appendPlainText(str(exc));return None
     def make_project_tab(self):
         page=QtWidgets.QWidget();form=QtWidgets.QFormLayout(page);self.fields={};current=config.settings()
-        for key,label in [('scene','中性角色场景'),('maya_python','Maya 2024 mayapy'),('plugin','RigLogic 插件（已有安装）'),('gui_root','Faceboard 根节点'),('mesh','输出脸部 Mesh'),('reference','头部参考节点'),('raw_node','只读表情诊断节点')]:
+        for key,label in [('scene','中性角色场景'),('maya_python','Maya 2022 / 2024 mayapy'),('plugin','RigLogic 插件（已有安装）'),('gui_root','Faceboard 根节点'),('mesh','输出脸部 Mesh'),('reference','头部参考节点'),('raw_node','只读表情诊断节点')]:
             field=QtWidgets.QLineEdit(str(current.get(key,'')));field.setObjectName(key);self.fields[key]=field
             if key in ('scene','maya_python','plugin'):
                 row=QtWidgets.QWidget();box=QtWidgets.QHBoxLayout(row);box.setContentsMargins(0,0,0,0);box.addWidget(field)
                 box.addWidget(self.button('选择',key+'_browse',lambda f=field:self.choose_file(f)));form.addRow(label,row)
             else:form.addRow(label,field)
+        self.allow_newer_scene=QtWidgets.QCheckBox('尝试打开较新 Maya 场景（需重新验证角色变形）');self.allow_newer_scene.setChecked(bool(current.get('allow_newer_scene',False)));form.addRow(self.allow_newer_scene)
         self.video=QtWidgets.QLineEdit();self.video.setObjectName('video')
         row=QtWidgets.QWidget();box=QtWidgets.QHBoxLayout(row);box.setContentsMargins(0,0,0,0);box.addWidget(self.video);box.addWidget(self.button('选择视频','browse_video',lambda:self.choose_file(self.video)));form.addRow('参考视频',row)
         self.folder=QtWidgets.QLineEdit(str(ROOT/'projects'/'新项目'));self.folder.setObjectName('project_folder');form.addRow('项目目录（新目录）',self.folder)
@@ -95,7 +96,7 @@ class FaceInverseWindow(QtWidgets.QDialog):
         path,_=QtWidgets.QFileDialog.getOpenFileName(self,'选择文件',field.text())
         if path:field.setText(path)
     def source_config(self):
-        out=config.settings();out.update({key:field.text().strip() for key,field in self.fields.items()});return out
+        out=config.settings();out.update({key:field.text().strip() for key,field in self.fields.items()});out['allow_newer_scene']=self.allow_newer_scene.isChecked();return out
     def save_settings(self):session.save(ROOT/'project_paths.json',self.source_config());self.status.setText('路径设置已保存')
     def prepare_project(self):
         folder=Path(self.folder.text()).resolve();folder.mkdir(parents=True,exist_ok=True)
@@ -202,5 +203,5 @@ def show():
                 WINDOW.show();WINDOW.raise_();return WINDOW
             WINDOW.close();WINDOW.deleteLater()
         except RuntimeError:pass
-    if QtWidgets.QApplication.instance() is None:raise RuntimeError('请从 Maya 2024 交互界面启动工具')
+    if QtWidgets.QApplication.instance() is None:raise RuntimeError('请从 Maya 2022 或 2024 交互界面启动工具')
     WINDOW=FaceInverseWindow(maya_parent());WINDOW.show();WINDOW.raise_();return WINDOW

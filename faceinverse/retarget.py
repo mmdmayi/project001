@@ -79,7 +79,7 @@ def landmark_assist(normalized,score_names,rows,tracking,neutral_frame=None):
         note='Heuristic ratio assistance; first 0.5s corner baseline unless explicit neutral frame. Not calibrated geometric reconstruction.')
 
 
-def retarget(cal,tracking,neutral_frame=None,temporal=.02,assist=True):
+def retarget(cal,tracking,neutral_frame=None,temporal=.02,assist=False):
     a=np.asarray(cal['matrix'],float);base=np.asarray(cal['neutral'],float)
     variables=cal['variables'];physical=cal['physical_controls'];obs=cal['observation_names']
     if a.shape!=(len(obs),len(variables)) or not np.isfinite(a).all():raise ValueError('Invalid response matrix')
@@ -135,9 +135,9 @@ def retarget(cal,tracking,neutral_frame=None,temporal=.02,assist=True):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('calibration');p.add_argument('tracking');p.add_argument('output')
-    p.add_argument('--no-landmark-assist',action='store_true');p.add_argument('--neutral-frame',type=int);p.add_argument('--temporal',type=float,default=.02);args=p.parse_args()
+    group=p.add_mutually_exclusive_group();group.add_argument('--landmark-assist',action='store_true',help='Explicitly enable legacy uncalibrated amplitude heuristics');group.add_argument('--no-landmark-assist',action='store_true');p.add_argument('--neutral-frame',type=int);p.add_argument('--temporal',type=float,default=.02);args=p.parse_args()
     cal=json.loads(Path(args.calibration).read_text(encoding='utf-8-sig'));tracking=json.loads(Path(args.tracking).read_text(encoding='utf-8-sig'))
-    result=retarget(cal,tracking,args.neutral_frame,args.temporal,not args.no_landmark_assist)
+    result=retarget(cal,tracking,args.neutral_frame,args.temporal,args.landmark_assist and not args.no_landmark_assist)
     Path(args.output).parent.mkdir(parents=True,exist_ok=True);Path(args.output).write_text(json.dumps(result,allow_nan=False),encoding='utf8')
     print(json.dumps(dict(output=args.output,frames=len(result['frames']),controls=len(result['plugs']),seconds=result['seconds'],
                          mean_semantic_rmse=float(np.mean(result['feature_rmse'])),unobservable=result['unobservable_rows'])),flush=True)

@@ -14,9 +14,13 @@ def run(job_path):
     from . import maya_bridge as m
     config=job['config'];started=time.perf_counter()
     try:
+        actual_maya=str(cmds.about(version=True))
+        if actual_maya not in ('2022','2024'):raise ValueError('Unsupported Maya host: '+actual_maya)
+        expected=str(config.get('maya_version',actual_maya))
+        if expected!=actual_maya:raise ValueError('Maya version mismatch: expected '+expected+', running '+actual_maya)
         plugin=config.get('plugin')
         if plugin:cmds.loadPlugin(plugin,quiet=True)
-        cmds.file(config['scene'],open=True,force=True,prompt=False,executeScriptNodes=False)
+        cmds.file(config['scene'],open=True,force=True,prompt=False,executeScriptNodes=False,ignoreVersion=bool(config.get('allow_newer_scene',False)))
         if job['mode']=='calibrate':
             from .semantic_map import observations
             raw=config.get('raw_node','CTRL_expressions');mesh=config.get('mesh','head_lod0_mesh');ref=config.get('reference') or None
@@ -49,7 +53,7 @@ def run(job_path):
                 raise ValueError('RIG_NO_MESH_RESPONSE: 面部没有实际变形，请检查角色执行插件、Mesh 和绑定评价')
             save(output,dict(schema=1,physical_controls=controls,variables=variables,observation_names=names,neutral=neutral,
                 matrix=[list(r) for r in zip(*columns)],mesh=mesh,reference=ref,mesh_vertices=vertices,mesh_neutral=mesh0,
-                mesh_matrix=[list(r) for r in zip(*mesh_columns)],raw_node=raw,mapping=observations(),config=config,seconds=time.perf_counter()-started),False)
+                mesh_matrix=[list(r) for r in zip(*mesh_columns)],host_maya=actual_maya,host_python=sys.version,raw_node=raw,mapping=observations(),config=config,seconds=time.perf_counter()-started),False)
         elif job['mode']=='bake':
             result=load(job['animation']);cmds.currentUnit(time='film');m.bake(result)
             if job.get('audio') and Path(job['audio']).is_file():cmds.sound(file=job['audio'],offset=result['frames'][0],name='FaceInverse_reference_audio')
@@ -60,7 +64,7 @@ def run(job_path):
             if error>1e-5:raise RuntimeError('关键帧回放校验失败')
             cmds.playbackOptions(minTime=result['frames'][0],maxTime=result['frames'][-1])
             cmds.currentTime(result['frames'][0]);cmds.file(rename=str(output));cmds.file(save=True,type='mayaBinary',force=True)
-            save(output.with_suffix('.verification.json'),dict(key_error=error,keys=cmds.keyframe(result['plugs'],query=True,keyframeCount=True),seconds=time.perf_counter()-started),False)
+            save(output.with_suffix('.verification.json'),dict(host_maya=actual_maya,host_python=sys.version,key_error=error,keys=cmds.keyframe(result['plugs'],query=True,keyframeCount=True),seconds=time.perf_counter()-started),False)
         else:raise ValueError('Unknown Maya worker mode')
     finally:maya.standalone.uninitialize()
 
