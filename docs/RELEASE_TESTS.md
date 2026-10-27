@@ -16,3 +16,5 @@ The package implements animator-authored expression keyframes and expression-bas
 Maya, the character, DNA and Epic plugins are not distributed. Offline installation requires the model already present in models/face_landmarker.task; the online installer downloads the fixed, hash-verified model from Google's official URL.
 
 Chinese installation and usage instructions: PACKAGE_INSTALL_CN.md and USER_GUIDE_CN.md.
+
+A nondeforming rig with changing diagnostic attributes was explicitly rejected by the Maya worker.

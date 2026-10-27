@@ -45,6 +45,8 @@ def run(job_path):
                         mesh_columns.append([a-b for a,b in zip(m.features(mesh,vertices,ref),mesh0)])
                     m.apply(controls,c0)
             if not variables:raise ValueError('Faceboard 没有有效响应')
+            if not any(abs(value)>1e-7 for column in mesh_columns for value in column):
+                raise ValueError('RIG_NO_MESH_RESPONSE: 面部没有实际变形，请检查角色执行插件、Mesh 和绑定评价')
             save(output,dict(schema=1,physical_controls=controls,variables=variables,observation_names=names,neutral=neutral,
                 matrix=[list(r) for r in zip(*columns)],mesh=mesh,reference=ref,mesh_vertices=vertices,mesh_neutral=mesh0,
                 mesh_matrix=[list(r) for r in zip(*mesh_columns)],raw_node=raw,mapping=observations(),config=config,seconds=time.perf_counter()-started),False)
