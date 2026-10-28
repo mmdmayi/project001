@@ -1,4 +1,4 @@
-# FaceInverse 0.4.0 / Maya 2022 / Windows x64
+# FaceInverse 0.4.0 / Maya 2024 / Windows x64
 
 1. 完整解压到有写权限的目录。
 2. 双击 INSTALL.bat 安装独立运行环境。
