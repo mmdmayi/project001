@@ -7,6 +7,11 @@ from maya import cmds
 from maya.api import OpenMaya as om
 
 
+def frame_time(frame,fps=24.):
+    """Convert a project's numeric frame into the current Maya UI time unit."""
+    return om.MTime(float(frame)/float(fps),om.MTime.kSeconds).asUnits(om.MTime.uiUnit())
+
+
 def write(path, value):
     with open(path, 'w', encoding='utf8') as f:
         json.dump(value, f, indent=2, allow_nan=False)

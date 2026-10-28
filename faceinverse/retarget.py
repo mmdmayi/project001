@@ -79,7 +79,9 @@ def landmark_assist(normalized,score_names,rows,tracking,neutral_frame=None):
         note='Heuristic ratio assistance; first 0.5s corner baseline unless explicit neutral frame. Not calibrated geometric reconstruction.')
 
 
-def retarget(cal,tracking,neutral_frame=None,temporal=.02,assist=False):
+def retarget(cal,tracking,neutral_frame=None,temporal=.02,assist=False,scene_fps=24.,start_frame=1.):
+    from .timing import scene_rate,frames_from_times
+    scene_fps=scene_rate(scene_fps)
     a=np.asarray(cal['matrix'],float);base=np.asarray(cal['neutral'],float)
     variables=cal['variables'];physical=cal['physical_controls'];obs=cal['observation_names']
     if a.shape!=(len(obs),len(variables)) or not np.isfinite(a).all():raise ValueError('Invalid response matrix')
@@ -123,8 +125,8 @@ def retarget(cal,tracking,neutral_frame=None,temporal=.02,assist=False):
         predicted=a@effective+base
         values.append(control);predictions.append(predicted.tolist());errors.append(float(np.sqrt(np.mean((predicted-row)**2))))
         statuses.append(int(result.status))
-    return dict(schema=2,kind='video-driven Faceboard semantic baseline',plugs=plugs,frames=(1.+24.*times).tolist(),
-        values=values,source_fps=fps,scene_fps=24.,source=tracking.get('source'),source_start_seconds=tracking.get('source_start_seconds',0.),
+    return dict(schema=2,kind='video-driven Faceboard semantic baseline',plugs=plugs,frames=frames_from_times(times,scene_fps,start_frame),
+        values=values,source_fps=fps,scene_fps=scene_fps,start_frame=float(start_frame),source=tracking.get('source'),source_start_seconds=tracking.get('source_start_seconds',0.),
         detection_flags=valid.tolist(),quality=quality,observation_names=obs,semantic_targets=target.tolist(),
         predicted_observations=predictions,feature_rmse=errors,statuses=statuses,seconds=time.perf_counter()-started,
         neutral_policy='explicit_frame' if neutral_frame is not None else '5th percentile lower envelope capped at 0.15',

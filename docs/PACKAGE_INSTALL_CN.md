@@ -1,4 +1,6 @@
-# FaceInverse 0.3.1 安装说明
+> 0.4 工作台新增 Tracker、旋转、帧率和分组操作，见 WORKBENCH_V04_CN.md。下文保留基本安装与样本操作说明。
+
+# FaceInverse 0.4 安装说明
 
 支持 Windows x64、Maya 2022（Python 3 模式）和 Maya 2024；安装包默认目标由 release.json 指定。工具不分发 Maya、角色、DNA 或 Epic 插件；角色必须已能在目标电脑正常评价。
 

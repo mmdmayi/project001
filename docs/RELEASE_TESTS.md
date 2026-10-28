@@ -1,3 +1,9 @@
+# FaceInverse 0.4 workbench verification
+
+47 numerical tests, real Maya 2022/2024 timing/rotation/UI tests, independent tracker launch, explicit channel masks and versioned retiming passed. See RESULTS_V04.md for measured evidence and limitations.
+
+## Historical releases
+
 # FaceInverse 0.3.1 verification
 
 Maya 2022 real-rig sampling, 842-frame video baking/reopening, 180 authored pose constraints, both clean offline and clean online installation, 32 numerical tests and negative rig/host checks passed on 2026-10-27. See MAYA2022_TEST_RESULTS.md for evidence and limitations. Maya 2024 sampling and 30-frame bake regression also passed. Version 0.3.1 disables uncalibrated landmark amplitude assistance by default.

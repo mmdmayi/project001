@@ -1,4 +1,4 @@
-# Maya 2022 安装与迁移说明（FaceInverse 0.3.1）
+# Maya 2022 安装与迁移说明（FaceInverse 0.4）
 
 适用：Windows x64、Maya 2022 的 Python 3 模式。Maya 2022 的 Python 2 模式不支持。也保留 Maya 2024 兼容路径。本包 release.json 指定默认目标为 2022，自动查找 Maya2022/bin/mayapy.exe 与 maya-2022 的已有 RigLogic 插件；不自动改用 2024。
 

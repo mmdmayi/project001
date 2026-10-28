@@ -1,4 +1,6 @@
-# FaceInverse 0.3.1 操作说明
+> 0.4 工作台新增 Tracker、旋转、帧率和分组操作，见 WORKBENCH_V04_CN.md。下文保留基本安装与样本操作说明。
+
+# FaceInverse 0.4 操作说明
 
 ## 1. 建立项目
 

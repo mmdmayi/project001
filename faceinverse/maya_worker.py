@@ -55,7 +55,10 @@ def run(job_path):
                 matrix=[list(r) for r in zip(*columns)],mesh=mesh,reference=ref,mesh_vertices=vertices,mesh_neutral=mesh0,
                 mesh_matrix=[list(r) for r in zip(*mesh_columns)],host_maya=actual_maya,host_python=sys.version,raw_node=raw,mapping=observations(),config=config,seconds=time.perf_counter()-started),False)
         elif job['mode']=='bake':
-            result=load(job['animation']);cmds.currentUnit(time='film');m.bake(result)
+            from .timing import maya_unit
+            result=load(job['animation']);cmds.currentUnit(time=maya_unit(result.get('scene_fps',24.)),updateAnimation=False);m.bake(result)
+            actual_fps=1./om.MTime(1.,om.MTime.uiUnit()).asUnits(om.MTime.kSeconds)
+            if abs(actual_fps-result.get('scene_fps',24.))>1e-6:raise ValueError('Maya 实际时间单位与动画帧率不一致')
             if job.get('audio') and Path(job['audio']).is_file():cmds.sound(file=job['audio'],offset=result['frames'][0],name='FaceInverse_reference_audio')
             error=0.
             for i in sorted({0,len(result['frames'])//4,len(result['frames'])//2,len(result['frames'])-1}):
@@ -64,7 +67,7 @@ def run(job_path):
             if error>1e-5:raise RuntimeError('关键帧回放校验失败')
             cmds.playbackOptions(minTime=result['frames'][0],maxTime=result['frames'][-1])
             cmds.currentTime(result['frames'][0]);cmds.file(rename=str(output));cmds.file(save=True,type='mayaBinary',force=True)
-            save(output.with_suffix('.verification.json'),dict(host_maya=actual_maya,host_python=sys.version,key_error=error,keys=cmds.keyframe(result['plugs'],query=True,keyframeCount=True),seconds=time.perf_counter()-started),False)
+            save(output.with_suffix('.verification.json'),dict(host_maya=actual_maya,host_python=sys.version,scene_fps=actual_fps,key_error=error,keys=cmds.keyframe(result['plugs'],query=True,keyframeCount=True),seconds=time.perf_counter()-started),False)
         else:raise ValueError('Unknown Maya worker mode')
     finally:maya.standalone.uninitialize()
 

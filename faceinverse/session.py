@@ -65,7 +65,7 @@ def create(path,calibration_path,tracking_path,baseline_path,config):
     if len(tracking['frames'])!=len(baseline['frames']):raise ValueError('追踪和基线动画帧数不同')
     names=sorted({n for f in tracking['frames'] if f.get('scores') for n in f['scores'] if not n.startswith('_')})
     if not names:raise ValueError('没有可用表情系数')
-    info=dict(schema=1,version='0.3.1',session_id=str(uuid.uuid4()),
+    info=dict(schema=1,version='0.4.0',session_id=str(uuid.uuid4()),
         rig_signature=rig_signature(cal),clip_id=fingerprint(dict(source=tracking.get('source'),start=tracking.get('source_start_seconds'),
              fps=tracking['fps'],frames=len(tracking['frames']),scores=[f.get('scores') for f in tracking['frames']])),
         paths=dict(calibration=relative(calibration_path,path.parent),tracking=relative(tracking_path,path.parent),
@@ -158,11 +158,5 @@ def import_library(path,source):
 
 
 def suggestions(tracking):
-    frames=[(i,f) for i,f in enumerate(tracking['frames']) if f.get('detected') and f.get('scores')]
-    if not frames:return []
-    criteria=[('中性参考',lambda f:-sum(f['scores'].get(k,0) for k in ('jawOpen','mouthSmileLeft','mouthSmileRight','eyeBlinkLeft','eyeBlinkRight'))),
-        ('张嘴',lambda f:f['scores'].get('jawOpen',0)),('左闭眼',lambda f:f['scores'].get('eyeBlinkLeft',0)),
-        ('右闭眼',lambda f:f['scores'].get('eyeBlinkRight',0)),('微笑',lambda f:f['scores'].get('mouthSmileLeft',0)+f['scores'].get('mouthSmileRight',0)),
-        ('皱眉',lambda f:f['scores'].get('browDownLeft',0)+f['scores'].get('browDownRight',0)),
-        ('抬眉',lambda f:f['scores'].get('browInnerUp',0)),('噘嘴',lambda f:f['scores'].get('mouthPucker',0))]
-    return [dict(label=label,frame=max(frames,key=lambda pair:func(pair[1]))[0]) for label,func in criteria]
+    from .expressions import candidates
+    return candidates(tracking)
